@@ -1,0 +1,23 @@
+spring:
+  kafka:
+    producer:
+      transaction-id-prefix: user-service-tx
+      properties:
+        enable.idempotence: true
+        transactional.id: tran-id-${random.uuid}
+      security:
+        protocol: PLAINTEXT
+    bootstrap-servers: localhost:9092
+    properties:
+      session:
+        timeout:
+          ms: 200000
+    consumer:
+      auto-offset-reset: latest
+      security:
+        protocol: PLAINTEXT
+      max-poll-records: 1
+      heartbeat-interval: 10000
+      isolation-level: read_committed
+    listener:
+      missing-topics-fatal: false

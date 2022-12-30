@@ -1,0 +1,33 @@
+server:
+  servlet:
+    context-path: /user-service/api
+  port: 8031
+
+jwt:
+  secret:
+    access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
+
+spring:
+  profiles:
+    active: kafka
+  datasource:
+    url: jdbc:postgresql://localhost:5432/life_helper_user
+    username: nikitadmitrenko
+    password:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      show-sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher # Иначе не запускает приклад из-за свагера
+
+logging:
+  level:
+    org.springframework.security: DEBUG
