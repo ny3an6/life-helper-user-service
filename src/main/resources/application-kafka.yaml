@@ -7,7 +7,7 @@ spring:
         transactional.id: tran-id-${random.uuid}
       security:
         protocol: PLAINTEXT
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     properties:
       session:
         timeout:

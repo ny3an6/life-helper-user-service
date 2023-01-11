@@ -43,7 +43,6 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests()
                 .requestMatchers(swaggerMatches).permitAll()
-                .requestMatchers("/auth/**", "/registration/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
