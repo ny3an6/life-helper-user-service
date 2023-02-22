@@ -1,42 +1,71 @@
 version: '2'
 
 services:
-  app:
-    image: 'docker-spring-boot-postgres:latest'
+  auth-app:
+#    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: ../life-helper-authentication-service
+      dockerfile: ./Dockerfile
+    container_name: auth-app
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - DB_URL=jdbc:postgresql://host.docker.internal:5432/life_helper_auth
+      - DB_USERNAME=nikitadmitrenko
+      - DB_PASSWORD=
+      - JWT_SECRET_ACCESS=qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
+      - JWT_SECRET_REFRESH=zL1HB3Pch05Avfynovxrf/kpF9O2m4NCWKJUjEp27s9J2jEG3ifiKCGylaZ8fDeoONSTJP/wAzKawB8F9rOMNg==
+      - JWT_EXPIRATION_MINUTES=25
+      - JWT_EXPIRATION_DAYS=30
+    ports:
+      - "8030:8030"
+  user-app:
     build:
       context: .
-    container_name: app
+    container_name: user-app
     depends_on:
-      - db
+      - kafka
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - DB_URL=jdbc:postgresql://db:5432/life_helper_user
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - DB_URL=jdbc:postgresql://host.docker.internal:5432/life_helper_user #host.docker.internal для подключения к внешней бд
+      - DB_USERNAME=nikitadmitrenko
+      - DB_PASSWORD=
       - JWT_SECRET_ACCESS=qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
-  db:
-    image: 'postgres:15.1-alpine'
-    container_name: db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "8031:8031"
+#  db:
+#    image: 'postgres:14.5'
+#    container_name: db
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_HOST_AUTH_METHOD=trust
+#  dbUser:
+#    image: 'postgres:14.5'
+#    container_name: dbUser
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_DB= "life_helper_user"
+#      - POSTGRES_HOST_AUTH_METHOD=trust
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_CLIENT_PORT: 2183
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:2181
+      - 2183:2183
   kafka:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
     ports:
-      - 29092:29092
+      - 29093:29093
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2183
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093,PLAINTEXT_HOST://localhost:29093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
