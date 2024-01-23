@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE) //TODO: че это за хуйня?
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JwtUtils {
 
     public static JwtAuthentication generate(Claims claims) {
@@ -18,6 +18,7 @@ public class JwtUtils {
         jwtInfoToken.setRoles(getRoles(claims));
         jwtInfoToken.setFirstName(claims.get("firstName", String.class));
         jwtInfoToken.setLastName(claims.get("lastName", String.class));
+        jwtInfoToken.setUserId(claims.get("userId", Long.class));
         jwtInfoToken.setUsername(claims.getSubject());
         return jwtInfoToken;
     }

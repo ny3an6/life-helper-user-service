@@ -20,6 +20,9 @@ services:
       - JWT_EXPIRATION_DAYS=30
     ports:
       - "8030:8030"
+    networks:
+      - rmoff_kafka
+
   user-app:
     build:
       context: .
@@ -34,38 +37,28 @@ services:
       - JWT_SECRET_ACCESS=qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
     ports:
       - "8031:8031"
-#  db:
-#    image: 'postgres:14.5'
-#    container_name: db
-#    environment:
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres
-#      - POSTGRES_HOST_AUTH_METHOD=trust
-#  dbUser:
-#    image: 'postgres:14.5'
-#    container_name: dbUser
-#    environment:
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres
-#      - POSTGRES_DB= "life_helper_user"
-#      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - rmoff_kafka
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:5.5.0
+    container_name: zookeeper
+    networks:
+      - rmoff_kafka
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - 2181:2181
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:5.5.0
+    container_name: kafka
+    networks:
+      - rmoff_kafka
     depends_on:
       - zookeeper
-    ports:
-      - 29092:29092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+networks:
+  rmoff_kafka:
+

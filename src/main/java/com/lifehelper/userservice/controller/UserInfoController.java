@@ -1,6 +1,7 @@
 package com.lifehelper.userservice.controller;
 
 import com.lifehelper.userservice.model.entity.UserInfo;
+import com.lifehelper.userservice.model.security.JwtAuthentication;
 import com.lifehelper.userservice.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,6 +21,12 @@ public class UserInfoController {
     @ResponseBody
     public ResponseEntity<UserInfo> getUserInfo(@PathVariable Long userId) {
         return ResponseEntity.ok(userInfoService.getUserInfoByUserId(userId));
+    }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<JwtAuthentication> getUserInfo() {
+        return ResponseEntity.ok(userInfoService.getAuthenticationInfo());
     }
 
 }
